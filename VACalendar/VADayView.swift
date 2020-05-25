@@ -20,6 +20,8 @@ public protocol VADayViewAppearanceDelegate: class {
     @objc optional func shape() -> VADayShape
     // percent of the selected area to be painted
     @objc optional func selectedArea() -> CGFloat
+    @objc optional func textColorForToday() -> UIColor
+    @objc optional func backgroundColorForToday() -> UIColor
 }
 
 protocol VADayViewDelegate: class {
@@ -95,7 +97,7 @@ class VADayView: UIView {
     }
     
     private func setState(_ state: VADayState) {
-        if dayViewAppearanceDelegate?.shape?() == .circle && (state == .selected || state == .today) {
+        if dayViewAppearanceDelegate?.shape?() == .circle && state == .selected {
             dateLabel.clipsToBounds = true
             dateLabel.layer.cornerRadius = dateLabel.frame.height / 2
         }
@@ -104,9 +106,13 @@ class VADayView: UIView {
         layer.borderColor = dayViewAppearanceDelegate?.borderColor?(for: state).cgColor ?? layer.borderColor
         layer.borderWidth = dayViewAppearanceDelegate?.borderWidth?(for: state) ?? dateLabel.layer.borderWidth
         
-        dateLabel.textColor = dayViewAppearanceDelegate?.textColor?(for: state) ?? dateLabel.textColor
-        dateLabel.backgroundColor = dayViewAppearanceDelegate?.textBackgroundColor?(for: state) ?? dateLabel.backgroundColor
-        
+        if day.isToday {
+            dateLabel.textColor = dayViewAppearanceDelegate?.textColorForToday?() ?? dateLabel.textColor
+            dateLabel.backgroundColor = dayViewAppearanceDelegate?.backgroundColorForToday?() ?? dateLabel.backgroundColor
+        } else {
+            dateLabel.textColor = dayViewAppearanceDelegate?.textColor?(for: state) ?? dateLabel.textColor
+            dateLabel.backgroundColor = dayViewAppearanceDelegate?.textBackgroundColor?(for: state) ?? dateLabel.backgroundColor
+        }
         updateSupplementaryViews()
     }
     

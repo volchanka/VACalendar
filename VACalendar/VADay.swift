@@ -10,7 +10,7 @@ import UIKit
 
 @objc
 public enum VADayState: Int {
-    case out, selected, today, available, unavailable
+    case out, selected, available, unavailable
 }
 
 @objc
@@ -44,9 +44,6 @@ class VADay {
     let calendar: Calendar
 
     var reverseSelectionState: VADayState {
-        if isToday {
-            return state == .today ? .selected : .today
-        }
         return state == .available ? .selected : .available
     }
     
@@ -54,12 +51,12 @@ class VADay {
         return state == .selected
     }
     
-    var isSelectable: Bool {
-          return state == .selected || state == .available || state == .today
+    var isSelectable: Bool {//?
+          return state == .selected || state == .available
         }
 
     var isToday: Bool {
-        return calendar.isDate(date, inSameDayAs: Date())
+        return calendar.isDateInToday(date)
     }
     
     var dayInMonth: Bool {
